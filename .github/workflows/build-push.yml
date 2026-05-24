@@ -6,7 +6,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository_owner }}/notification-service
+  IMAGE_NAME: notification-service
 
 jobs:
   build-push:
@@ -20,6 +20,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Convert owner name to lowercase
+        id: owner
+        run: echo "OWNER_LC=${OWNER,,}" >> $GITHUB_ENV
+        env:
+          OWNER: ${{ github.repository_owner }}
+
       - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
@@ -32,4 +38,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ env.IMAGE_NAME }}:latest
+          tags: ghcr.io/${{ env.OWNER_LC }}/${{ env.IMAGE_NAME }}:latest
