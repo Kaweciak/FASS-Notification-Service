@@ -11,8 +11,6 @@ Aby aktywować konto, użyj poniższego kodu aktywacyjnego:
 Kod aktywacyjny:
 {payload['activationToken']}
 
-Kod jest ważny przez ograniczony czas.
-
 Życzymy miłego korzystania z platformy.
 """
     )
