@@ -1,12 +1,17 @@
 def tourist_registered(payload):
     return (
-        "Witamy w systemie",
+        "Aktywacja konta",
         f"""
 Cześć {payload['name']},
 
 dziękujemy za rejestrację w systemie obsługi wycieczek.
 
-Twoje konto zostało pomyślnie utworzone.
+Aby aktywować konto, użyj poniższego kodu aktywacyjnego:
+
+Kod aktywacyjny:
+{payload['activationToken']}
+
+Kod jest ważny przez ograniczony czas.
 
 Życzymy miłego korzystania z platformy.
 """

@@ -6,7 +6,7 @@ async def handle(event):
     subject, body = tourist_registered(event.payload)
 
     await send_email(
-        recipient=event.user_email,
+        recipient=event.payload["email"],
         subject=subject,
         body=body
     )

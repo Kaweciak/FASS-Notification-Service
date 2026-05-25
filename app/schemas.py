@@ -1,8 +1,8 @@
 from pydantic import BaseModel, EmailStr
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 
 class KafkaEvent(BaseModel):
     event_type: str
-    user_email: EmailStr
+    user_email: Optional[EmailStr] = None
     payload: Dict[str, Any]
