@@ -13,7 +13,8 @@ consumer = KafkaEventConsumer()
 
 @app.on_event("startup")
 async def startup_event():
-    asyncio.create_task(consumer.start())
+    task = asyncio.create_task(consumer.start())
+    task.add_done_callback(lambda t: print(f"Consumer task ended: {t.exception()}") if not t.cancelled() and t.exception() else None)
 
 
 @app.get("/health")

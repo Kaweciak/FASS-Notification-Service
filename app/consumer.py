@@ -16,11 +16,15 @@ class KafkaEventConsumer:
 
     async def start(self):
         await self._connect()
-
+        print("Starting message loop...")
         try:
             async for message in self.consumer:
                 print(f"Received Kafka message from topic {message.topic}")
                 await self.process_message(message.value)
+            print("Message loop exited cleanly.")
+        except Exception as exc:
+            print(f"Message loop crashed: {exc}")
+            raise
         finally:
             print("Stopping Kafka consumer...")
             await self.consumer.stop()
