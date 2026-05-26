@@ -6,6 +6,8 @@ from app.consumer import KafkaEventConsumer
 from app.schemas import KafkaEvent
 from app.router import route_event
 
+print("NEW VERSION OF MAIN.PY LOADED")
+
 app = FastAPI()
 
 consumer = KafkaEventConsumer()
