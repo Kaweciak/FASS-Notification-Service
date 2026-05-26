@@ -22,11 +22,9 @@ def employee_activation(payload):
         f"""
 Dzień dobry,
 
-aby aktywować konto, kliknij w poniższy link:
+aby aktywować konto, użyj poniższego kodu:
 
-{payload['activation_link']}
-
-Link aktywacyjny jest ważny przez ograniczony czas.
+{payload['activation_code']}
 """
     )
 
