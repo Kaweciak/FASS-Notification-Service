@@ -16,6 +16,9 @@ class KafkaEventConsumer:
 
     async def start(self):
         await self._connect()
+        await self._consume()
+
+    async def _consume(self):
         print("Starting message loop...")
         try:
             async for message in self.consumer:
