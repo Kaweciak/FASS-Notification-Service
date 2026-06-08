@@ -74,7 +74,11 @@ class KafkaEventConsumer:
             print(f"RAW MESSAGE: {decoded}")
 
             payload = json.loads(decoded)
-            event = KafkaEvent(**payload)
+
+            event = KafkaEvent(
+                event_type="TouristRegistered",
+                payload=payload
+            )
 
             print(f"Processing event: {event.event_type}")
             await route_event(event)
