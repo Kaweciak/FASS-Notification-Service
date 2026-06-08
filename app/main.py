@@ -11,9 +11,7 @@ consumer = KafkaEventConsumer()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("Lifespan startup fired")
-    await consumer._connect()
-    print("Kafka connected, starting message loop")
-    task = asyncio.create_task(consumer._consume())
+    task = asyncio.create_task(consumer.start())
     task.add_done_callback(
         lambda t: print(f"Consumer task ended: {t.exception()}")
         if not t.cancelled() and t.exception() else None
@@ -21,6 +19,7 @@ async def lifespan(app: FastAPI):
     yield
     print("Lifespan shutdown")
     await consumer._safe_stop()
+    await task
 
 app = FastAPI(lifespan=lifespan)
 
