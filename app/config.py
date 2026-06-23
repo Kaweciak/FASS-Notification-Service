@@ -17,16 +17,8 @@ class Settings(BaseSettings):
     SMTP_PASSWORD: str = ""
     SMTP_FROM_EMAIL: str = "noreply@example.com"
 
-    @field_validator("KAFKA_CONSUME_TOPICS", mode="before")
-    @classmethod
-    def assemble_topics(cls, v: Union[str, list[str]]) -> list[str]:
-        if isinstance(v, str):
-            return [topic.strip() for topic in v.split(",")]
-        return v
-
     class Config:
         env_file = ".env"
-        extra = "ignore"
 
 
 settings = Settings()
