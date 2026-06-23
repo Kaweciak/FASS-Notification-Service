@@ -169,15 +169,11 @@ Szczegóły znajdziesz w systemie.
 
 def trip_organizer_assigned(payload):
     return (
-        "Przydzielono Ci rolę organizatora",
+        "Jesteś teraz organizatorem wycieczki",
         f"""
 Dzień dobry,
 
-zostałeś przypisany jako organizator wycieczki.
-
-Wycieczka: {payload['trip_name']}
-
-Prosimy o zapoznanie się ze szczegółami organizacyjnymi.
+Jesteś organizatorem wycieczki o nazwie: {payload['trip_name']}
 """
     )
 
