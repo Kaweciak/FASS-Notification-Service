@@ -13,6 +13,11 @@ class KafkaEventConsumer:
 
     def __init__(self):
         self.consumer = None
+        # Mapping for legacy/external services that don't embed an event_type
+        self.TOPIC_FALLBACK_MAP = {
+            "tourist.registered": "TouristRegistered",
+            # Add any other plain-payload topics here if needed
+        }
 
     async def start(self):
         await self._connect()
@@ -24,7 +29,8 @@ class KafkaEventConsumer:
         try:
             async for message in self.consumer:
                 print(f"Received Kafka message from topic {message.topic}")
-                await self.process_message(message.value)
+                # Pass the topic name down so we know where it came from
+                await self.process_message(message.topic, message.value)
             print("Message loop exited cleanly.")
         except Exception as exc:
             print(f"Message loop crashed: {exc}")
@@ -34,12 +40,14 @@ class KafkaEventConsumer:
             await self.consumer.stop()
 
     async def _connect(self):
+        topics = [t.strip() for t in settings.KAFKA_CONSUME_TOPICS.split(",")]
+
         while True:
             try:
-                print("Connecting to Kafka...")
+                print(f"Connecting to Kafka topics: {topics}...")
 
                 self.consumer = AIOKafkaConsumer(
-                    settings.KAFKA_TOPIC,
+                    *topics,
                     bootstrap_servers=settings.KAFKA_BOOTSTRAP_SERVERS,
                     group_id=settings.KAFKA_GROUP_ID,
                     auto_offset_reset="earliest",
@@ -47,7 +55,7 @@ class KafkaEventConsumer:
 
                 await self.consumer.start()
 
-                print(f"Connected to Kafka topic: {settings.KAFKA_TOPIC}")
+                print(f"Connected to Kafka topics: {topics}")
                 return
 
             except (GroupCoordinatorNotAvailableError, KafkaConnectionError) as exc:
@@ -68,15 +76,25 @@ class KafkaEventConsumer:
                 pass
             self.consumer = None
 
-    async def process_message(self, raw_message: bytes):
+    async def process_message(self, topic: str, raw_message: bytes):
         try:
             decoded = raw_message.decode()
-            print(f"RAW MESSAGE: {decoded}")
+            print(f"RAW MESSAGE FROM {topic}: {decoded}")
 
-            payload = json.loads(decoded)
+            data = json.loads(decoded)
+
+            # Strategy 1: Look for an embedded 'event_type' (e.g., Trip Service structure)
+            if isinstance(data, dict) and "event_type" in data:
+                event_type = data["event_type"]
+                payload = data.get("payload", data)
+
+            # Strategy 2: Fallback to the topic-to-event map (e.g., Tourist Service structure)
+            else:
+                event_type = self.TOPIC_FALLBACK_MAP.get(topic, "UnknownEvent")
+                payload = data
 
             event = KafkaEvent(
-                event_type="TouristRegistered",
+                event_type=event_type,
                 payload=payload
             )
 
