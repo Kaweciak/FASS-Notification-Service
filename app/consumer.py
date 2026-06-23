@@ -15,8 +15,24 @@ class KafkaEventConsumer:
         self.consumer = None
         # Mapping for legacy/external services that don't embed an event_type
         self.TOPIC_FALLBACK_MAP = {
+            # Tourist Auth Service
             "tourist.registered": "TouristRegistered",
-            # Add any other plain-payload topics here if needed
+
+            # Employee Auth / Employee Service Streams
+            "employee.profile-created": "EmployeeProfileCreated",
+            "employee.activation-token-created": "EmployeeActivation",
+            "employee.account-activated": "EmployeeAccountActivated",
+            "employee.activation-expired": "EmployeeActivationExpired",
+
+            # Area Service Streams
+            "area.events": "AreaEvent",
+
+            # Trip & Warning Streams
+            "warning.created": "PatrolWarning",
+            "trip.warning.notification.required": "TripWarning",
+            "trip.participant.invited": "ParticipantInvited",
+            "trip.organizer.assigned": "TripOrganizerAssigned",
+            "trip.cancelled": "TripCancelled",
         }
 
     async def start(self):
