@@ -13,6 +13,8 @@ from app.handlers import (
     trip_organizer_assigned,
     trip_cancelled,
 )
+# 1. Import AsyncSessionLocal from your db file
+from app.db import AsyncSessionLocal
 
 EVENT_HANDLER_MAP = {
     "TouristRegistered": tourist_registered.handle,
@@ -39,4 +41,10 @@ async def route_event(event):
             f"No handler for event type: {event.event_type}"
         )
 
-    await handler(event)
+    async with AsyncSessionLocal() as db:
+        try:
+            await handler(event, db=db)
+            await db.commit()
+        except Exception:
+            await db.rollback()
+            raise
