@@ -99,18 +99,20 @@ class KafkaEventConsumer:
 
             data = json.loads(decoded)
 
-            # Strategy 1: Look for an embedded 'event_type' (e.g., Trip Service structure)
+            # 1. Pull the user_email from the root of the raw dictionary if it exists
+            user_email = data.get("user_email")
+
             if isinstance(data, dict) and "event_type" in data:
                 event_type = data["event_type"]
                 payload = data.get("payload", data)
-
-            # Strategy 2: Fallback to the topic-to-event map (e.g., Tourist Service structure)
             else:
                 event_type = self.TOPIC_FALLBACK_MAP.get(topic, "UnknownEvent")
                 payload = data
 
+            # 2. Explicitly pass user_email to the validation schema
             event = KafkaEvent(
                 event_type=event_type,
+                user_email=user_email,  # <--- FIX HERE
                 payload=payload
             )
 
@@ -120,6 +122,5 @@ class KafkaEventConsumer:
 
         except json.JSONDecodeError as exc:
             print(f"Invalid JSON message: {exc}")
-
         except Exception as exc:
             print(f"Failed to process message: {exc}")
