@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     APP_NAME: str = "fass-notification-service"
 
     KAFKA_BOOTSTRAP_SERVERS: str = "kafka:9092"
-    KAFKA_CONSUME_TOPICS: list[str] = ["tourist.registered"]
+    KAFKA_CONSUME_TOPICS: str = "tourist.registered"
     KAFKA_GROUP_ID: str = "email-notification-group"
 
     SMTP_HOST: str = "mailhog"
